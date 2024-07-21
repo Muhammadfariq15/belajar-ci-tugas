@@ -11,6 +11,8 @@ $routes->get('/', 'Home::index', ['filter' => 'auth']);
 $routes->get('login', 'AuthController::login');
 $routes->post('login', 'AuthController::login');
 $routes->get('logout', 'AuthController::logout');
+$routes->post('register', 'AuthController::register');
+$routes->get('register', 'AuthController::register');
 
 $routes->group('produk',['filter' => 'auth'], function ($routes){
     $routes->get('', 'ProdukController::index', ['filter' => 'auth']);

@@ -62,4 +62,45 @@ class AuthController extends BaseController
             session()->destroy();
             return redirect()->to('login');
         }
+
+        public function register() {
+            // Pastikan metode request adalah POST
+            if ($this->request->getMethod() === 'post') {
+                // Ambil data dari POST
+                $username = $this->request->getPost('username');
+                $password = $this->request->getPost('password');
+                $email = $this->request->getPost('email');
+                $role = 'user';  // Atur peran default sebagai 'user'
+    
+                // Validasi input
+                $validation = \Config\Services::validation();
+                $validation->setRules([
+                    'username' => 'required',
+                    'email' => 'required|valid_email',
+                    'password' => 'required|min_length[6]'
+                ]);
+    
+                if ($validation->withRequest($this->request)->run()) {
+                    // Lakukan validasi dan simpan data ke database
+                    $userModel = new UserModel();
+    
+                    $data = [
+                        'username' => $username,
+                        'email' => $email,
+                        'password' => $password,
+                        'role' => $role
+                    ];
+    
+                    if ($userModel->insert($data)) {
+                        return redirect()->to('/success'); // Atau beri respon sesuai kebutuhan
+                    } else {
+                        return redirect()->back()->withInput()->with('error', 'Registrasi gagal, coba lagi.');
+                    }
+                } else {
+                    // Jika validasi gagal, kembali ke form dengan pesan error
+                    return redirect()->back()->withInput()->with('errors', $validation->getErrors());
+                }
+            }
+            return view('v_regis');
+        }
 }
